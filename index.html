@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nithish D — UI/UX Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg-soft:#111111;
+    --card:#141414;
+    --border:rgba(255,255,255,0.10);
+    --border-strong:rgba(255,255,255,0.22);
+    --text:#f2f2f2;
+    --text-dim:#9a9a9a;
+    --text-faint:#6b6b6b;
+    --accent:#ffffff;
+    --max:1180px;
+    --nav-h:72px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Poppins', system-ui, sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    /* Creates a new stacking context on <body> so that the fixed,
+       z-index:-1 particle canvas (#tsparticles-bg) paints above this
+       element's own opaque background instead of being hidden behind
+       it by the page's root stacking context. Fixes the "particles
+       aren't floating/visible" issue site-wide. */
+    isolation:isolate;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  ::selection{background:#ffffff; color:#0a0a0a;}
+
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 32px;}
+
+  /* Anchor offset so sticky nav never covers section content */
+  section, footer#contact{ scroll-margin-top: var(--nav-h); }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,10,10,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:var(--nav-h);
+  }
+  .brand{display:flex; align-items:center; gap:12px; font-weight:600; letter-spacing:0.08em; font-size:14px;}
+  .brand-mark{
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid var(--border-strong);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px;
+  }
+  .navlinks{display:flex; gap:36px; font-size:13px; letter-spacing:0.12em; font-weight:500; text-transform:uppercase; color:var(--text-dim);}
+  .navlinks a{position:relative; padding:4px 0;}
+  .navlinks a:hover, .navlinks a:focus-visible{color:var(--text);}
+  .navlinks a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--accent);
+    transition:width .25s ease;
+  }
+  .navlinks a:hover::after, .navlinks a:focus-visible::after{width:100%;}
+  .nav-toggle{display:none;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    height:calc(100vh - var(--nav-h)); min-height:520px; max-height:920px;
+    background:
+      radial-gradient(ellipse 80% 60% at 75% 30%, rgba(255,255,255,0.05), transparent 60%),
+      linear-gradient(160deg, #0a0a0a 0%, #111111 55%, #0a0a0a 100%);
+  }
+  /* Particle canvas is intentionally narrower than the hero and stops
+     before the portrait — keeps the dotted field off the photo instead
+     of it bleeding through the photo's feathered edge mask. */
+  #tsparticles-hero{
+    position:absolute; left:0; top:0; bottom:0; width:50%; z-index:0;
+  }
+  @media (max-width:860px){ #tsparticles-hero{ width:58%; } }
+  #tsparticles-hero canvas{ display:block; }
+  .hero-bgtext{
+    position:absolute; left:0; right:0; top:25%;
+    transform:translateY(-52%);
+    z-index:0; pointer-events:none;
+    text-align:center; white-space:nowrap;
+    font-weight:800; letter-spacing:0.02em;
+    font-size:clamp(80px, 17vw, 230px);
+    line-height:1;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(255,255,255,0.10);
+    background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015));
+    -webkit-background-clip:text; background-clip:text;
+    animation:bgTextDrift 14s ease-in-out infinite;
+  }
+  @keyframes bgTextDrift{
+    0%,100%{ transform:translateY(-52%) translateX(0); }
+    50%{ transform:translateY(-52%) translateX(-1.5%); }
+  }
+  @media (max-width:960px){ .hero-bgtext{ font-size:clamp(60px,22vw,140px); } }
+
+  /* Wrapper gives the cutout a soft radial backdrop so the portrait's
+     edges blend into the hero instead of showing a hard/white outline. */
+  .hero-portrait-wrap{
+    position:absolute; right:2%; bottom:0;
+    height:100%; width:52%;
+    z-index:1; pointer-events:none;
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .hero-portrait-wrap::before{
+    content:''; position:absolute; right:-6%; bottom:-4%;
+    width:88%; height:92%;
+    background:radial-gradient(closest-side, rgba(255,255,255,0.10), rgba(255,255,255,0) 72%);
+    filter:blur(2px);
+  }
+  .hero-portrait{
+    position:relative;
+    height:102%; width:auto; max-width:100%;
+    object-fit:contain; object-position:bottom;
+    filter:drop-shadow(0 20px 60px rgba(0,0,0,0.65));
+    /* Radial mask feathers the cutout's hair/shoulder fringe into the
+       background instead of cutting off hard at 100% opacity. */
+    -webkit-mask-image:radial-gradient(120% 105% at 58% 92%, black 62%, transparent 97%);
+            mask-image:radial-gradient(120% 105% at 58% 92%, black 62%, transparent 97%);
+    opacity:0.97;
+  }
+  @media (max-width:860px){
+    .hero-portrait-wrap{width:74%; right:-6%; opacity:0.55;}
+    .hero-portrait{
+      -webkit-mask-image:radial-gradient(120% 100% at 55% 88%, black 45%, transparent 92%);
+              mask-image:radial-gradient(120% 100% at 55% 88%, black 45%, transparent 92%);
+    }
+  }
+  .hero-inner{
+    position:absolute; left:0; right:0; bottom:9%;
+    padding:0 32px; z-index:2;
+  }
+  .hero-inner .wrap-inner{max-width:var(--max); margin:0 auto;}
+  .hi-text{
+    font-style:italic; font-weight:300;
+    font-size:clamp(18px,2.4vw,30px);
+    color:#f2f2f2; margin-bottom:6px;
+    text-shadow:0 2px 10px rgba(0,0,0,0.6);
+  }
+  .hero-name{
+    font-weight:800; letter-spacing:-0.01em;
+    font-size:clamp(40px,8vw,108px);
+    line-height:1;
+    margin-bottom:16px;
+    display:inline-block;
+    position:relative;
+    background:linear-gradient(100deg,
+      #ffffff 0%, #ffffff 35%, #9a9a9a 45%, #ffffff 55%, #ffffff 100%);
+    background-size:240% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    animation:heroShine 6s ease-in-out infinite, heroGlow 3.4s ease-in-out infinite;
+  }
+  @keyframes heroShine{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+  @keyframes heroGlow{
+    0%,100%{ filter:drop-shadow(0 0 6px rgba(255,255,255,0.35)) drop-shadow(0 10px 30px rgba(0,0,0,0.85)); }
+    50%{ filter:drop-shadow(0 0 26px rgba(255,255,255,0.85)) drop-shadow(0 10px 30px rgba(0,0,0,0.85)); }
+  }
+
+  .hero-divider{height:2px; width:min(320px,60%); background:rgba(255,255,255,0.85); margin-bottom:14px;}
+  .hero-tag{
+    font-size:clamp(13px,1.6vw,22px); letter-spacing:0.28em; text-transform:uppercase;
+    color:#e6e6e6; font-weight:500; margin-bottom:clamp(20px,3.5vw,36px);
+    text-shadow:0 2px 8px rgba(0,0,0,0.6);
+  }
+  .hero-accent{
+    position:absolute; right:clamp(20px,4vw,64px); top:14%; bottom:14%; width:1px;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.55) 0 2px, transparent 2px 78px);
+    display:none; z-index:2;
+  }
+  @media (min-width:860px){ .hero-accent{display:block;} }
+  .hero-cta{
+    display:flex; justify-content:flex-start;
+  }
+  .btn-row{display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{
+    padding:14px 28px; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
+    border-radius:2px; border:1px solid var(--border-strong);
+    transition:all .2s ease;
+    display:inline-block;
+  }
+  .btn-solid{background:var(--accent); color:#0a0a0a; border-color:var(--accent);}
+  .btn-solid:hover{background:transparent; color:var(--accent);}
+  .btn-outline{background:transparent; color:var(--text);}
+  .btn-outline:hover{background:var(--accent); color:#0a0a0a;}
+  @media (max-height:680px){
+    .hero{height:auto; min-height:auto; padding-top:64px; padding-bottom:48px;}
+    .hero-inner{position:static; padding:0 32px; margin-top:24px;}
+  }
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{padding:120px 0;}
+  .eyebrow{
+    font-size:12px; letter-spacing:0.28em; text-transform:uppercase; color:var(--text-faint);
+    display:flex; align-items:center; gap:14px; margin-bottom:18px; font-weight:500;
+  }
+  .eyebrow::before{content:''; width:28px; height:1px; background:var(--border-strong);}
+  h2.section-title{
+    font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-0.01em; margin-bottom:56px;
+    max-width:640px;
+  }
+  .rule{height:1px; background:var(--border); width:100%;}
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:0.85fr 1.15fr; gap:72px; align-items:center;}
+  .about-photo{position:relative; border:1px solid var(--border); padding:14px;}
+  .about-photo img{filter:grayscale(15%);}
+  .about-photo::after{
+    content:''; position:absolute; top:-10px; right:-10px; width:56px; height:56px;
+    border-top:1px solid var(--border-strong); border-right:1px solid var(--border-strong);
+  }
+  .about-photo::before{
+    content:''; position:absolute; bottom:-10px; left:-10px; width:56px; height:56px;
+    border-bottom:1px solid var(--border-strong); border-left:1px solid var(--border-strong);
+    z-index:2;
+  }
+  .about-text p{color:var(--text-dim); font-size:17px; font-weight:300; margin-bottom:20px; max-width:560px;}
+  .about-text p strong{color:var(--text); font-weight:500;}
+  .meta-row{display:flex; gap:48px; margin-top:36px; flex-wrap:wrap;}
+  .meta-item .k{font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px;}
+  .meta-item .v{font-size:15px; font-weight:500;}
+
+  /* ---------- SKILLS ---------- */
+  .skill-group{margin-bottom:40px;}
+  .skill-group:last-child{margin-bottom:0;}
+  .skill-group .k{font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-faint); margin-bottom:18px; font-weight:500;}
+  .pills{display:flex; flex-wrap:wrap; gap:12px;}
+  .pill{
+    border:1px solid var(--border); padding:10px 20px; font-size:14px; font-weight:400;
+    border-radius:2px; color:var(--text-dim);
+    transition:all .2s ease;
+  }
+  .pill:hover{border-color:var(--border-strong); color:var(--text); background:rgba(255,255,255,0.03);}
+
+  /* ---------- PROJECTS ---------- */
+  .project{
+    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;
+    padding:64px 0; border-bottom:1px solid var(--border);
+  }
+  .project:first-of-type{padding-top:0;}
+  .project:last-of-type{border-bottom:none; padding-bottom:0;}
+  .project:nth-child(even) .p-visual{order:2;}
+  .project:nth-child(even) .p-text{order:1;}
+  .p-visual{
+    border:1px solid var(--border); background:var(--card); aspect-ratio:4/3;
+    display:flex; align-items:center; justify-content:center; padding:0;
+    position:relative; overflow:hidden;
+  }
+  .p-visual svg{width:100%; height:100%;}
+  .p-visual img{width:100%; height:100%; object-fit:cover;}
+  .p-num{
+    position:absolute; top:18px; left:20px; font-size:12px; letter-spacing:0.16em;
+    color:var(--text-faint); font-weight:500; z-index:2;
+    background:rgba(10,10,10,0.55); padding:4px 8px;
+  }
+  .p-tag{
+    display:inline-block; font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--text-faint); border:1px solid var(--border); padding:6px 14px; margin-bottom:20px;
+  }
+  .p-text h3{font-size:26px; font-weight:600; margin-bottom:18px; letter-spacing:-0.01em;}
+  .p-block{margin-bottom:16px;}
+  .p-block .k{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px; font-weight:600;}
+  .p-block .v{color:var(--text-dim); font-size:15px; font-weight:300;}
+  .p-stack{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;}
+  .p-stack span{font-size:12px; color:var(--text-faint); border:1px solid var(--border); padding:5px 12px;}
+  .p-links{display:flex; gap:14px; margin-top:24px; flex-wrap:wrap;}
+  .p-links a{
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
+    border:1px solid var(--border-strong); padding:10px 18px; border-radius:2px;
+    transition:all .2s ease;
+  }
+  .p-links a.primary{background:var(--accent); color:#0a0a0a; border-color:var(--accent);}
+  .p-links a.primary:hover{background:transparent; color:var(--accent);}
+  .p-links a.secondary:hover{background:var(--accent); color:#0a0a0a;}
+
+  /* ---------- EXPERIENCE ---------- */
+  .timeline{border-left:1px solid var(--border); padding-left:40px; max-width:720px;}
+  .t-item{position:relative; padding-bottom:44px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:''; position:absolute; left:-45px; top:4px; width:9px; height:9px;
+    border-radius:50%; background:var(--accent);
+  }
+  .t-role{font-size:19px; font-weight:600; margin-bottom:4px;}
+  .t-org{font-size:14px; color:var(--text-faint); letter-spacing:0.05em; margin-bottom:14px; text-transform:uppercase;}
+  .t-item ul{padding-left:18px; color:var(--text-dim); font-size:15px; font-weight:300;}
+  .t-item li{margin-bottom:6px;}
+
+  /* ---------- EDUCATION ---------- */
+  .edu-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border);}
+  .edu-card{background:var(--bg); padding:36px;}
+  .edu-card .deg{font-size:19px; font-weight:600; margin-bottom:8px;}
+  .edu-card .school{color:var(--text-dim); font-size:15px; margin-bottom:6px;}
+  .edu-card .yr{color:var(--text-faint); font-size:13px; letter-spacing:0.06em;}
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer{padding:110px 0 48px;}
+  .contact-top{display:grid; grid-template-columns:1.1fr 0.9fr; gap:64px; align-items:end; margin-bottom:80px;}
+  .contact-big{font-size:clamp(34px,5vw,56px); font-weight:700; letter-spacing:-0.01em; line-height:1.15;}
+  .contact-big span{color:var(--text-faint);}
+  .contact-list{display:flex; flex-direction:column; gap:22px;}
+  .c-row{display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:16px;}
+  .c-row .k{font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint);}
+  .c-row .v{font-size:15px; font-weight:500;}
+  .c-row .v:hover{color:var(--text-dim);}
+  .foot-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:32px; border-top:1px solid var(--border); font-size:12px; color:var(--text-faint); letter-spacing:0.04em; flex-wrap:wrap; gap:16px;}
+
+  a.btn:focus-visible, .navlinks a:focus-visible{outline:1px solid var(--accent); outline-offset:4px;}
+
+  @media (max-width: 860px){
+    .navlinks{display:none;}
+    .about-grid, .contact-top{grid-template-columns:1fr; gap:40px;}
+    .project, .project:nth-child(even) .p-visual, .project:nth-child(even) .p-text{grid-template-columns:1fr; order:0;}
+    .project{grid-template-columns:1fr;}
+    .edu-grid{grid-template-columns:1fr;}
+    section{padding:80px 0;}
+    .hero-cta{bottom:28px;}
+    .btn{padding:12px 20px; font-size:12px;}
+  }
+
+  /* ---------- SITE-WIDE PARTICLE FIELD ---------- */
+  /* Fixed behind everything; sections have no opaque background of their
+     own so this shows through on scroll, not just inside the hero.
+     pointer-events is NOT disabled here — tsParticles needs real mouse
+     events on this element to detect hover/grab/click interactivity. */
+  #tsparticles-bg{
+    position:fixed; inset:0; width:100vw; height:100vh; z-index:-1;
+  }
+
+  /* ---------- CUSTOM CURSOR ---------- */
+  html.has-custom-cursor, html.has-custom-cursor *{ cursor:none; }
+  .cursor-dot, .cursor-ring{
+    position:fixed; top:0; left:0; z-index:9999; pointer-events:none;
+    border-radius:50%;
+    transform:translate(calc(var(--x,-50px) - 50%), calc(var(--y,-50px) - 50%));
+    opacity:0; transition:opacity .25s ease;
+  }
+  html.cursor-active .cursor-dot, html.cursor-active .cursor-ring{ opacity:1; }
+  .cursor-dot{
+    width:6px; height:6px; background:#ffffff;
+    box-shadow:0 0 8px rgba(255,255,255,0.7);
+  }
+  .cursor-ring{
+    width:34px; height:34px; border:1px solid rgba(255,255,255,0.55);
+    transition:width .25s ease, height .25s ease, border-color .25s ease, background-color .25s ease, opacity .25s ease;
+  }
+  .cursor-ring.is-hover{
+    width:58px; height:58px; background:rgba(255,255,255,0.06); border-color:#ffffff;
+  }
+  .cursor-dot.is-hover{ width:9px; height:9px; }
+  .cursor-ring.is-down{ width:26px; height:26px; }
+  @media (max-width:860px), (hover:none), (pointer:coarse){
+    .cursor-dot, .cursor-ring{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="tsparticles-bg" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="brand-mark" data-cfg="brandInitial">N</span> <span data-cfg="brandName">NITHISH&nbsp;D</span></div>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div id="tsparticles-hero" aria-hidden="true"></div>
+  <div class="hero-bgtext" aria-hidden="true">PORTFOLIO</div>
+  <div class="hero-portrait-wrap">
+    <img class="hero-portrait" src="assets/hero.png" alt="Nithish D, UI/UX Designer, portrait">
+  </div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <div class="wrap-inner">
+      <div class="hi-text" data-cfg="heroGreeting">Hi, I Am</div>
+      <div class="hero-name" data-cfg="heroName">NITHISH</div>
+      <div class="hero-divider"></div>
+      <div class="hero-tag" data-cfg="heroTagline">UI / UX Designer</div>
+      <div class="hero-cta">
+        <div class="btn-row">
+          <a class="btn btn-solid" href="#projects">View Projects</a>
+          <a class="btn btn-outline" href="assets/resume.pdf" target="_blank" rel="noopener" data-cfg="resumeLink">View Resume</a>
+          <a class="btn btn-outline" href="assets/resume.pdf" download="Nithish_D_Resume.pdf" data-cfg="resumeLink" data-cfg-download="resumeDownloadName">Download Resume</a>
+          <a class="btn btn-outline" href="mailto:nithishbv@gmail.com" data-cfg="emailLink">Get In Touch</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow">About</div>
+    <div class="about-grid">
+      <div class="about-photo">
+        <img src="assets/profile.png" alt="Nithish D headshot">
+      </div>
+      <div class="about-text">
+        <p>I'm a <strong>Computer Science graduate</strong> focused on UI/UX and front-end development — I design interfaces in Figma and then build them myself, so what ships stays close to what was designed.</p>
+        <p>My toolkit spans <strong>Figma, HTML, CSS, JavaScript and React</strong> on the front end, with <strong>Python, SQL and Node.js</strong> underneath for the parts that need real logic. I've also spent time with AI/ML fundamentals during an internship, which shapes how I think about data-driven interfaces.</p>
+        <p>I'm most interested in projects where design and engineering decisions affect each other — dashboards, portals, and tools that need to feel simple even when the underlying system isn't.</p>
+        <div class="meta-row">
+          <div class="meta-item"><div class="k">Based in</div><div class="v">Madurai, India</div></div>
+          <div class="meta-item"><div class="k">Focus</div><div class="v">UI/UX &amp; Front-End</div></div>
+          <div class="meta-item"><div class="k">Status</div><div class="v">Open to work</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="eyebrow">Skills</div>
+    <h2 class="section-title">Tools I design and build with.</h2>
+
+    <div class="skill-group">
+      <div class="k">Design</div>
+      <div class="pills">
+        <div class="pill">Figma</div>
+        <div class="pill">UI/UX Design</div>
+        <div class="pill">Prototyping</div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="k">Front-End</div>
+      <div class="pills">
+        <div class="pill">HTML5</div>
+        <div class="pill">CSS3</div>
+        <div class="pill">JavaScript</div>
+        <div class="pill">React</div>
+        <div class="pill">Bootstrap</div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="k">Backend &amp; Data</div>
+      <div class="pills">
+        <div class="pill">Python</div>
+        <div class="pill">SQL</div>
+        <div class="pill">Node.js</div>
+        <div class="pill">AI Prompt Engineering</div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="k">Working style</div>
+      <div class="pills">
+        <div class="pill">Effective Communication</div>
+        <div class="pill">Team Work</div>
+        <div class="pill">Time Management</div>
+        <div class="pill">Creativity</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="eyebrow">Selected Work</div>
+    <h2 class="section-title">Projects, and the problems behind them.</h2>
+
+    <div class="project">
+      <div class="p-visual">
+        <span class="p-num">01</span>
+        <img src="assets/project-smart-city.png" alt="Smart City Portal — Madurai screenshot">
+      </div>
+      <div class="p-text">
+        <div class="p-tag">Web Portal</div>
+        <h3>Smart City Portal — Madurai</h3>
+        <div class="p-block">
+          <div class="k">Problem</div>
+          <div class="v">Residents and visitors had no single place to find local services, facilities, and attractions across Madurai.</div>
+        </div>
+        <div class="p-block">
+          <div class="k">Approach</div>
+          <div class="v">Designed and built an interactive portal with clear navigation and information sections, structured so unfamiliar users could find what they needed in a few clicks.</div>
+        </div>
+        <div class="p-block">
+          <div class="k">Result</div>
+          <div class="v">A responsive, user-friendly interface for exploring city services end to end.</div>
+        </div>
+        <div class="p-stack"><span>Figma</span><span>HTML/CSS</span><span>JavaScript</span></div>
+        <div class="p-links">
+          <a class="primary" href="https://smart-city-madurai-ten.vercel.app/" target="_blank" rel="noopener">View Project</a>
+          <a class="secondary" href="https://github.com/Nithish-03-07" target="_blank" rel="noopener" data-cfg="githubLink">Source Code</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="p-visual">
+        <span class="p-num">02</span>
+        <img src="assets/project-billing.png" alt="Billing Management Web App screenshot">
+      </div>
+      <div class="p-text">
+        <div class="p-tag">Web Application</div>
+        <h3>Billing Management Web App</h3>
+        <div class="p-block">
+          <div class="k">Problem</div>
+          <div class="v">Small billing workflows often need CRUD and persistence without the overhead of a full backend.</div>
+        </div>
+        <div class="p-block">
+          <div class="k">Approach</div>
+          <div class="v">Built a responsive billing application with HTML, CSS and JavaScript, using localStorage for persistent client-side data management.</div>
+        </div>
+        <div class="p-block">
+          <div class="k">Result</div>
+          <div class="v">A working CRUD billing tool with PDF bill generation, all running client-side.</div>
+        </div>
+        <div class="p-stack"><span>JavaScript</span><span>CRUD</span><span>PDF Generation</span></div>
+        <div class="p-links">
+          <a class="primary" href="https://nithish-03-07.github.io/REPEAR-WEB-APP/" target="_blank" rel="noopener">View Project</a>
+          <a class="secondary" href="https://github.com/Nithish-03-07" target="_blank" rel="noopener" data-cfg="githubLink">Source Code</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="eyebrow">Experience</div>
+    <h2 class="section-title">Where I've applied this so far.</h2>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-role">Python with AI — Internship</div>
+        <div class="t-org">Phoenix Soft Tech</div>
+        <ul>
+          <li>Worked with Python, NumPy and Pandas for data processing and analysis.</li>
+          <li>Gained practical exposure to AI/ML fundamentals, databases, and structured data workflows.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="education">
+  <div class="wrap">
+    <div class="eyebrow">Education</div>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <div class="deg">B.Sc. Computer Science</div>
+        <div class="school">Mannar Thirumalai Naicker College</div>
+        <div class="yr">2023 – 2026</div>
+      </div>
+      <div class="edu-card">
+        <div class="deg">Higher Secondary School</div>
+        <div class="school">PKN Boys Higher Secondary School</div>
+        <div class="yr">2022 – 2023</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="contact-top">
+      <div class="contact-big">Let's build something <span>worth designing well.</span></div>
+      <div class="contact-list">
+        <div class="c-row"><span class="k">Email</span><a class="v" href="mailto:nithishbv@gmail.com" data-cfg="emailLink" data-cfg-text="email">nithishbv@gmail.com</a></div>
+        <div class="c-row"><span class="k">Phone</span><a class="v" href="tel:+916382601698" data-cfg="phoneLink" data-cfg-text="phoneDisplay">+91 63826 01698</a></div>
+        <div class="c-row"><span class="k">GitHub</span><a class="v" href="https://github.com/Nithish-03-07" target="_blank" rel="noopener" data-cfg="githubLink" data-cfg-text="githubHandle">Nithish-03-07</a></div>
+        <div class="c-row"><span class="k">Resume</span><a class="v" href="assets/resume.pdf" target="_blank" rel="noopener" data-cfg="resumeLink">View / Download PDF</a></div>
+        <div class="c-row"><span class="k">Location</span><span class="v" data-cfg="location">Thoppur, Madurai</span></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div data-cfg="copyright">© 2026 Nithish D. All rights reserved.</div>
+      <div data-cfg="footerTagline">Web Designer · Digital Creator</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Site config: edit assets/config.js to rebrand this template without
+     touching any other file. -->
+<script src="assets/config.js"></script>
+
+<script>
+/* =========================================================================
+   PARTICLE FIELDS — self-contained canvas engine (no external CDN).
+   Two instances:
+     - tsparticles-hero : dense field inside the hero banner only
+     - tsparticles-bg   : sparse field fixed behind the whole page
+
+   PREMIUM FLOATING MOTION: every particle owns an independent heading
+   that random-walks over time (instead of moving in a fixed straight
+   line), plus a slow sinusoidal bob layered on top. The combination
+   reads as organic, weightless "floating dust" rather than particles
+   sliding along rails — and never stalls, since it doesn't depend on
+   any external script finishing its download.
+   ========================================================================= */
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cfg = window.SITE_CONFIG || {};
+
+  /* -------------------------------------------------------------------
+     APPLY CONFIG: pulls text, links, colors, and page title from
+     assets/config.js into the DOM.
+     ------------------------------------------------------------------- */
+  (function applyConfig(){
+    if (cfg.content && cfg.content.pageTitle) document.title = cfg.content.pageTitle;
+
+    if (cfg.colors){
+      var root = document.documentElement.style;
+      if (cfg.colors.bg) root.setProperty('--bg', cfg.colors.bg);
+      if (cfg.colors.bgSoft) root.setProperty('--bg-soft', cfg.colors.bgSoft);
+      if (cfg.colors.accent) root.setProperty('--accent', cfg.colors.accent);
+    }
+
+    document.querySelectorAll('[data-cfg]').forEach(function(el){
+      var key = el.getAttribute('data-cfg');
+      if (el.tagName === 'A' && cfg.links && (key in cfg.links)){
+        if (key === 'emailLink') el.href = 'mailto:' + cfg.links[key];
+        else if (key === 'phoneLink') el.href = 'tel:' + cfg.links[key];
+        else el.href = cfg.links[key];
+      } else if (cfg.content && (key in cfg.content)){
+        el.innerHTML = cfg.content[key];
+      }
+    });
+    document.querySelectorAll('[data-cfg-text]').forEach(function(el){
+      var key = el.getAttribute('data-cfg-text');
+      if (cfg.content && (key in cfg.content)) el.textContent = cfg.content[key];
+    });
+    document.querySelectorAll('[data-cfg-download]').forEach(function(el){
+      var key = el.getAttribute('data-cfg-download');
+      if (cfg.content && (key in cfg.content)) el.setAttribute('download', cfg.content[key]);
+    });
+  })();
+
+  function rand(min, max){ return min + Math.random() * (max - min); }
+
+  /* Base settings per field, overridable from assets/config.js via
+     `particles.hero` / `particles.bg` (count, color, speed, distances). */
+  var fieldDefaults = {
+    hero: {
+      count: 70, color: '255,255,255', sizeMin: 1.6, sizeMax: 3.4,
+      opacityMin: 0.45, opacityMax: 0.95,
+      speedMin: 6, speedMax: 16, floatAmp: 26,
+      linkDistance: 130, linkOpacity: 0.20,
+      grabDistance: 170, grabOpacity: 0.8,
+      pushQty: 3,
+      // "collect" (ring-capture) tuning — see COLLECT block in createParticleField
+      collectRadius: 60, collectThreshold: 10, holdDuration: 0.5,
+      blastDistance: 320, blastDuration: 0.7
+    },
+    bg: {
+      count: 46, color: '255,255,255', sizeMin: 1.4, sizeMax: 2.8,
+      opacityMin: 0.30, opacityMax: 0.75,
+      speedMin: 4, speedMax: 12, floatAmp: 22,
+      linkDistance: 140, linkOpacity: 0.13,
+      grabDistance: 170, grabOpacity: 0.6,
+      pushQty: 2,
+      collectRadius: 60, collectThreshold: 10, holdDuration: 0.5,
+      blastDistance: 280, blastDuration: 0.7
+    }
+  };
+
+  (function applyParticleOverrides(){
+    if (!cfg.particles) return;
+    ['hero', 'bg'].forEach(function(key){
+      var p = cfg.particles[key];
+      var target = fieldDefaults[key];
+      if (!p) return;
+      if (p.count) target.count = p.count;
+      if (p.color) target.color = hexToRgbString(p.color) || target.color;
+      if (p.speedMin) target.speedMin = p.speedMin * 4;
+      if (p.speedMax) target.speedMax = p.speedMax * 4;
+      if (p.grabDistance) target.grabDistance = p.grabDistance;
+      if (p.linkDistance) target.linkDistance = p.linkDistance;
+    });
+  })();
+
+  function hexToRgbString(hex){
+    if (!hex) return null;
+    var m = hex.replace('#', '');
+    if (m.length === 3) m = m.split('').map(function(c){ return c + c; }).join('');
+    if (m.length !== 6) return null;
+    var r = parseInt(m.substr(0,2), 16), g = parseInt(m.substr(2,2), 16), b = parseInt(m.substr(4,2), 16);
+    return r + ',' + g + ',' + b;
+  }
+
+  function createParticleField(containerId, opts){
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var canvas = document.createElement('canvas');
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    container.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = 0, h = 0;
+    var mouse = { x: -9999, y: -9999, active: false };
+    var particles = [];
+    var maxParticles = opts.count + opts.pushQty * 12;
+
+    /* ---- RING CAPTURE: collect 10+ dots inside the cursor ring, hold +
+       vibrate them in place (freezing their own link/grab lines to the
+       rest of the field), then blast them outward. ---- */
+    var COLLECT_RADIUS = opts.collectRadius;
+    var COLLECT_THRESHOLD = opts.collectThreshold;
+    var HOLD_DURATION = opts.holdDuration;
+    var BLAST_DISTANCE = opts.blastDistance;   // px a blasted dot travels, outward from the ring center
+    var BLAST_DURATION = opts.blastDuration;   // seconds it takes to cover that distance — shared with the shockwave so both move together
+    function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+    var collect = { state: 'idle', members: [], startT: 0 }; // state: idle | holding
+    var shockwaves = [];
+
+    function resize(){
+      w = container.clientWidth;
+      h = container.clientHeight;
+      canvas.width = Math.max(1, Math.round(w * dpr));
+      canvas.height = Math.max(1, Math.round(h * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeParticle(x, y, burst){
+      var startX = x != null ? x : rand(0, w);
+      var startY = y != null ? y : rand(0, h);
+      return {
+        // bx/by: the slowly-drifting anchor point
+        bx: startX, by: startY,
+        // x/y: the actual rendered position (anchor + float wobble)
+        x: startX, y: startY,
+        r: rand(opts.sizeMin, opts.sizeMax),
+        baseOpacity: rand(opts.opacityMin, opts.opacityMax),
+        // heading random-walks over time for a non-linear drift path
+        angle: rand(0, Math.PI * 2),
+        turnSpeed: rand(0.3, 0.9) * (Math.random() < 0.5 ? -1 : 1),
+        speed: rand(opts.speedMin, opts.speedMax) * (burst ? 4 : 1),
+        // independent floating wobble on each axis — this IS the
+        // "floating randomly" motion: a real oscillation, not a nudge.
+        floatAmpX: rand(opts.floatAmp * 0.6, opts.floatAmp),
+        floatAmpY: rand(opts.floatAmp * 0.6, opts.floatAmp),
+        floatSpeedX: rand(0.25, 0.6),
+        floatSpeedY: rand(0.2, 0.55),
+        floatPhaseX: rand(0, Math.PI * 2),
+        floatPhaseY: rand(0, Math.PI * 2),
+        twinklePhase: rand(0, Math.PI * 2),
+        twinkleSpeed: rand(0.3, 0.9),
+        // small smooth wobble used only while ring-captured (see p.collected in step())
+        vibPhaseX: rand(0, Math.PI * 2),
+        vibPhaseY: rand(0, Math.PI * 2),
+        vibFreqX: rand(7, 10),
+        vibFreqY: rand(7, 10),
+        fadeIn: burst ? 0 : 1
+      };
+    }
+
+    function step(dt, t){
+
+      // ---- RING CAPTURE: detect / advance / release, ahead of the main
+      // per-particle update below (which branches on the result). ----
+      if (mouse.active){
+        if (collect.state === 'idle'){
+          var nearby = [];
+          for (var ni = 0; ni < particles.length; ni++){
+            var np = particles[ni];
+            if (np.collected || np.blasting) continue;
+            var ndx = mouse.x - np.x, ndy = mouse.y - np.y;
+            if ((ndx * ndx + ndy * ndy) < COLLECT_RADIUS * COLLECT_RADIUS) nearby.push(np);
+          }
+          if (nearby.length >= COLLECT_THRESHOLD){
+            collect.state = 'holding';
+            collect.startT = t;
+            collect.members = nearby;
+            for (var nj = 0; nj < nearby.length; nj++){
+              nearby[nj].collected = true;
+              nearby[nj].holdX = nearby[nj].x;
+              nearby[nj].holdY = nearby[nj].y;
+            }
+          }
+        } else if (collect.state === 'holding' && (t - collect.startT) >= HOLD_DURATION){
+          // blast: fling every held particle away from the ring center —
+          // each dot rides a fixed outward radius curve (see the p.blasting
+          // branch below) so it travels exactly in step with the shockwave
+          // ring rather than drifting off on its own physics.
+          for (var bi = 0; bi < collect.members.length; bi++){
+            var bp = collect.members[bi];
+            var bdx = bp.holdX - mouse.x, bdy = bp.holdY - mouse.y;
+            var bdist = Math.sqrt(bdx * bdx + bdy * bdy);
+            bp.blastAngle = bdist > 0.01 ? Math.atan2(bdy, bdx) : rand(0, Math.PI * 2);
+            bp.blastCenterX = mouse.x;
+            bp.blastCenterY = mouse.y;
+            bp.blastStartT = t;
+            bp.collected = false;
+            bp.blasting = true;
+          }
+          shockwaves.push({ x: mouse.x, y: mouse.y, startT: t, duration: BLAST_DURATION });
+          collect.state = 'idle';
+          collect.members = [];
+        }
+      } else if (collect.state === 'holding'){
+        // pointer left mid-collect — release quietly, no blast
+        for (var rj = 0; rj < collect.members.length; rj++) collect.members[rj].collected = false;
+        collect.state = 'idle';
+        collect.members = [];
+      }
+
+      for (var i = 0; i < particles.length; i++){
+        var p = particles[i];
+
+        if (p.collected){
+          // held inside the ring: anchor frozen, a small smooth sine wobble
+          // (not raw random noise) that very gently grows toward the blast
+          var vibProgress = Math.min(1, (t - collect.startT) / HOLD_DURATION);
+          var vibAmp = 0.5 + vibProgress * 1.8; // small — a light tremble, not a shake
+          p.x = p.holdX + Math.sin(t * p.vibFreqX + p.vibPhaseX) * vibAmp;
+          p.y = p.holdY + Math.cos(t * p.vibFreqY + p.vibPhaseY) * vibAmp;
+          if (p.fadeIn < 1) p.fadeIn = Math.min(1, p.fadeIn + dt * 2);
+          continue;
+        }
+
+        if (p.blasting){
+          // ride a fixed outward radius curve from the blast center —
+          // same easing/timing as the shockwave ring, so the dot travels
+          // outward together with it instead of decaying independently
+          var bsp = (t - p.blastStartT) / BLAST_DURATION;
+          if (bsp >= 1){
+            // throw finished: hand back to normal drift from here
+            p.blasting = false;
+            p.bx = p.x; p.by = p.y;
+            p.angle = rand(0, Math.PI * 2);
+            p.speed = rand(opts.speedMin, opts.speedMax);
+          } else {
+            var br = BLAST_DISTANCE * easeOutCubic(bsp);
+            p.x = p.blastCenterX + Math.cos(p.blastAngle) * br;
+            p.y = p.blastCenterY + Math.sin(p.blastAngle) * br;
+            p.bx = p.x; p.by = p.y;
+            if (p.fadeIn < 1) p.fadeIn = Math.min(1, p.fadeIn + dt * 2);
+            continue;
+          }
+        }
+
+        // random-walk the heading so the drift path curves organically
+        p.angle += p.turnSpeed * dt;
+
+        p.bx += Math.cos(p.angle) * p.speed * dt;
+        p.by += Math.sin(p.angle) * p.speed * dt;
+
+        // wrap the anchor around the field with margin for the float radius
+        var margin = opts.floatAmp + 20;
+        if (p.bx < -margin) p.bx = w + margin;
+        if (p.bx > w + margin) p.bx = -margin;
+        if (p.by < -margin) p.by = h + margin;
+        if (p.by > h + margin) p.by = -margin;
+
+        // real floating wobble layered on top of the drifting anchor —
+        // this is what makes particles visibly bob/float in place
+        // even when the underlying drift is slow.
+        var floatX = Math.sin(t * p.floatSpeedX + p.floatPhaseX) * p.floatAmpX;
+        var floatY = Math.cos(t * p.floatSpeedY + p.floatPhaseY) * p.floatAmpY;
+
+        p.x = p.bx + floatX;
+        p.y = p.by + floatY;
+
+        // soft cursor pull ("grab") — nudges the anchor toward the pointer
+        if (mouse.active){
+          var dx = mouse.x - p.x, dy = mouse.y - p.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < opts.grabDistance && dist > 0.01){
+            var pull = (1 - dist / opts.grabDistance) * 0.8 * dt;
+            p.bx += dx * pull;
+            p.by += dy * pull;
+          }
+        }
+
+        if (p.fadeIn < 1) p.fadeIn = Math.min(1, p.fadeIn + dt * 2);
+      }
+
+      // trim extra burst particles beyond the target cap
+      if (particles.length > maxParticles){
+        particles.splice(opts.count, particles.length - maxParticles);
+      }
+    }
+
+    function draw(t){
+      ctx.clearRect(0, 0, w, h);
+
+      var isHolding = collect.state === 'holding';
+
+      // connecting links between nearby particles — while a ring-capture
+      // cluster is holding, don't link a collected dot to an uncollected
+      // one, so the held cluster reads as visually cut off from the rest
+      // of the field (a collected<->collected link is still drawn, which
+      // is what gives the held cluster its own little glow).
+      ctx.lineWidth = 1;
+      for (var i = 0; i < particles.length; i++){
+        for (var j = i + 1; j < particles.length; j++){
+          var a = particles[i], b = particles[j];
+          if (isHolding && (a.collected !== b.collected)) continue;
+          var dx = a.x - b.x, dy = a.y - b.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < opts.linkDistance){
+            var lo = opts.linkOpacity * (1 - dist / opts.linkDistance) * Math.min(a.fadeIn, b.fadeIn);
+            ctx.strokeStyle = 'rgba(' + opts.color + ',' + lo.toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // cursor grab lines — suppressed entirely while holding, since the
+      // held dots are already captured and the rest shouldn't reach in
+      if (mouse.active && !isHolding){
+        for (var k = 0; k < particles.length; k++){
+          var p = particles[k];
+          var dx2 = mouse.x - p.x, dy2 = mouse.y - p.y;
+          var dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+          if (dist2 < opts.grabDistance){
+            var go = opts.grabOpacity * (1 - dist2 / opts.grabDistance);
+            ctx.strokeStyle = 'rgba(' + opts.color + ',' + go.toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.moveTo(mouse.x, mouse.y);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // particles themselves, with twinkle + soft glow for a premium feel
+      for (var m = 0; m < particles.length; m++){
+        var pt = particles[m];
+        var twinkle = 0.55 + 0.45 * Math.sin(t * pt.twinkleSpeed + pt.twinklePhase);
+        var op = pt.baseOpacity * twinkle * pt.fadeIn;
+        if (pt.collected) op = Math.min(1, op * 1.4); // held dots glow a little brighter
+
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + opts.color + ',' + op.toFixed(3) + ')';
+        ctx.shadowColor = 'rgba(' + opts.color + ',' + (op * 0.9).toFixed(3) + ')';
+        ctx.shadowBlur = pt.r * 3.5;
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+
+      // blast shockwave — expands in step with the thrown dots; opacity
+      // holds steady until it reaches 70% of its full size, then dissolves
+      // down to nothing exactly as it reaches 100% size
+      var DISSOLVE_START_FRACTION = 0.7;
+      for (var s = shockwaves.length - 1; s >= 0; s--){
+        var sw = shockwaves[s];
+        var age = t - sw.startT;
+        if (age >= BLAST_DURATION){ shockwaves.splice(s, 1); continue; }
+
+        var expandP = Math.min(1, age / BLAST_DURATION); // 0 = start, 1 = full size
+        var radius = 6 + BLAST_DISTANCE * easeOutCubic(expandP);
+
+        var swOp;
+        if (expandP < DISSOLVE_START_FRACTION){
+          // quick fade-in, then hold near-full opacity up to the 70% mark
+          swOp = Math.min(1, expandP / 0.15) * 0.8;
+        } else {
+          // 70% -> 100% of full size: dissolve away to nothing
+          var dissolveP = (expandP - DISSOLVE_START_FRACTION) / (1 - DISSOLVE_START_FRACTION);
+          swOp = 0.8 * (1 - dissolveP) * (1 - dissolveP);
+        }
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(' + opts.color + ',' + swOp.toFixed(3) + ')';
+        ctx.lineWidth = 1.5;
+        ctx.arc(sw.x, sw.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    var lastTime = null;
+    function frame(now){
+      now = now / 1000;
+      if (lastTime == null) lastTime = now;
+      var dt = Math.min(now - lastTime, 0.05);
+      lastTime = now;
+
+      step(dt, now);
+      draw(now);
+
+      requestAnimationFrame(frame);
+    }
+
+    resize();
+    // particles must be created AFTER resize() so w/h are real —
+    // otherwise every particle spawns stacked at (0,0).
+    for (var i = 0; i < opts.count; i++) particles.push(makeParticle());
+    requestAnimationFrame(frame);
+
+    window.addEventListener('resize', function(){
+      resize();
+    });
+
+    window.addEventListener('mousemove', function(e){
+      var rect = container.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      if (x >= -50 && x <= w + 50 && y >= -50 && y <= h + 50){
+        mouse.x = x; mouse.y = y; mouse.active = true;
+      } else {
+        mouse.active = false;
+      }
+    }, { passive: true });
+    window.addEventListener('mouseleave', function(){ mouse.active = false; });
+
+    container.addEventListener('click', function(e){
+      var rect = container.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      for (var i = 0; i < opts.pushQty; i++){
+        particles.push(makeParticle(x, y, true));
+      }
+    });
+  }
+
+  function boot(){
+    if (document.getElementById('tsparticles-hero')){
+      createParticleField('tsparticles-hero', fieldDefaults.hero);
+    }
+    if (document.getElementById('tsparticles-bg')){
+      createParticleField('tsparticles-bg', fieldDefaults.bg);
+    }
+  }
+  boot();
+})();
+
+
+/* =========================================================================
+   SMOOTH TRAILING CURSOR
+   A small dot that snaps to the pointer + a ring that eases toward it
+   (linear interpolation each frame) for the "smooth dotted" trail feel.
+   Auto-disabled on touch/coarse-pointer devices via CSS + the JS guard below.
+   ========================================================================= */
+(function(){
+  var canUseCustomCursor = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (!canUseCustomCursor) return;
+
+  document.documentElement.classList.add('has-custom-cursor');
+
+  var dot = document.createElement('div');
+  dot.className = 'cursor-dot';
+  var ring = document.createElement('div');
+  ring.className = 'cursor-ring';
+  document.body.appendChild(dot);
+  document.body.appendChild(ring);
+
+  var mx = window.innerWidth/2, my = window.innerHeight/2;
+  var rx = mx, ry = my;
+  var EASE = 0.16; // 0..1 — higher = ring catches up to the dot faster
+
+  function setVars(el,x,y){ el.style.setProperty('--x', x+'px'); el.style.setProperty('--y', y+'px'); }
+  setVars(dot, mx, my); setVars(ring, rx, ry);
+
+  window.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
+    setVars(dot, mx, my);
+    document.documentElement.classList.add('cursor-active');
+  }, { passive:true });
+
+  window.addEventListener('mousedown', function(){ ring.classList.add('is-down'); });
+  window.addEventListener('mouseup', function(){ ring.classList.remove('is-down'); });
+  document.addEventListener('mouseleave', function(){ document.documentElement.classList.remove('cursor-active'); });
+
+  var HOVER_SELECTOR = 'a, button, .btn, input, textarea, [role="button"]';
+  document.addEventListener('mouseover', function(e){
+    if (e.target.closest && e.target.closest(HOVER_SELECTOR)){
+      ring.classList.add('is-hover'); dot.classList.add('is-hover');
+    }
+  });
+  document.addEventListener('mouseout', function(e){
+    if (e.target.closest && e.target.closest(HOVER_SELECTOR)){
+      ring.classList.remove('is-hover'); dot.classList.remove('is-hover');
+    }
+  });
+
+  function loop(){
+    rx += (mx-rx)*EASE;
+    ry += (my-ry)*EASE;
+    setVars(ring, rx, ry);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
